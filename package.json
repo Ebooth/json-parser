@@ -1,0 +1,37 @@
+{
+  "name": "json-parser",
+  "version": "1.0.0",
+  "description": "A JSON parser written in typescript",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "lint": "eslint 'src/**/*.ts'",
+    "lint:fix": "eslint 'src/**/*.ts' --fix",
+    "prettier:check": "prettier --check .",
+    "prettier:write": "prettier --write .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ebooth/json-parser.git"
+  },
+  "keywords": [
+    "JSON"
+  ],
+  "author": "Ebooth",
+  "license": "MIT",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Ebooth/json-parser/issues"
+  },
+  "homepage": "https://github.com/Ebooth/json-parser#readme",
+  "devDependencies": {
+    "eslint": "^8.51.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-config-standard-with-typescript": "^39.1.1",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
+  }
+}
