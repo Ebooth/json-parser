@@ -8,6 +8,7 @@
   },
   "scripts": {
     "main": "ts-node --esm src/main.ts",
+    "main:debug": "ts-node --esm --transpile-only src/main.ts",
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint 'src/**/*.ts' --fix",
     "prettier:check": "prettier --check .",

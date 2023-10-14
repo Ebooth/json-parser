@@ -5,24 +5,31 @@ export enum NodeType {
   Identifier = "Identifier",
 }
 
-export interface Expr {
+export interface Node {
   kind: NodeType;
 }
 
-export interface ObjectLiteral extends Expr {
+export interface ObjectLiteral extends Node {
   kind: NodeType.Object;
+  properties: Property[];
 }
 
-export interface Identifier extends Expr {
+export interface Identifier extends Node {
   kind: NodeType.Identifier;
+  value: string;
 }
 
-export interface Literal extends Expr {
+export interface Literal extends Node {
   kind: NodeType.Literal;
 }
 
-export interface Property extends Expr {
+export interface Property extends Node {
   kind: NodeType.Property;
   key: Identifier;
-  value: Expr;
+  value: Value;
+}
+
+export interface Value extends Node {
+  kind: NodeType.Literal;
+  value: string;
 }

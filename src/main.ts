@@ -1,11 +1,13 @@
 import fs from "fs/promises";
-import { Expr } from "./ast.js";
 import { evaluate } from "./interpreter.js";
 import Parser from "./parser.js";
 import { tokenize } from "./lexer.js";
+import util from "util";
+
+util.inspect.defaultOptions.depth = null;
 
 async function main() {
-  const res = await parseFile("tests/step2/valid.json");
+  const res = await parseFile("tests/step1/invalid.json");
   console.log(res);
 }
 
@@ -16,11 +18,10 @@ async function parseFile(filePath: string) {
 
 export function parseText(text: string) {
   const tokens = tokenize(text);
-  console.log(tokens);
-  // const parser = new Parser(tokens);
-  // const ast = parser.produceAST();
-  // const res = evaluate(ast as Expr);
-  // return res;
+  const parser = new Parser(tokens);
+  const ast = parser.produceAST();
+  const res = evaluate(ast);
+  return res;
 }
 
 main();

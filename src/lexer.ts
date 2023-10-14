@@ -4,6 +4,7 @@ export enum TokenType {
   String = "String",
   Number = "Number",
   Colon = "Colon",
+  Comma = "Comma",
   EOF = "EOF",
 }
 export type Token = {
@@ -23,6 +24,8 @@ export function tokenize(sourceCode: string): Token[] {
       tokens.push({ type: TokenType.CloseBrace, value: source.shift() as string });
     } else if (source[0] == ":") {
       tokens.push({ type: TokenType.Colon, value: source.shift() as string });
+    } else if (source[0] == ",") {
+      tokens.push({ type: TokenType.Comma, value: source.shift() as string });
     } else if (/\d/.test(source[0])) {
       let val = "";
       while (/\d/.test(source[0])) {
@@ -35,6 +38,7 @@ export function tokenize(sourceCode: string): Token[] {
         val += source.shift();
       }
       val += source.shift();
+
       tokens.push({ type: TokenType.String, value: val });
     } else if (/\s/.test(source[0])) {
       while (/\s/.test(source[0])) {

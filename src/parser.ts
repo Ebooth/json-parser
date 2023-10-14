@@ -1,4 +1,5 @@
-import { Token, TokenType, tokenize } from "./lexer.js";
+import { NodeType, Property, Node, Value } from "./ast.js";
+import { Token, TokenType } from "./lexer.js";
 
 export default class Parser {
   constructor(private tokens: Token[]) {}
@@ -7,16 +8,26 @@ export default class Parser {
     return this.tokens[0]!.type === TokenType.EOF;
   }
 
-  peek() {
+  private peek() {
     return this.tokens[0] as Token;
   }
 
-  advance() {
+  private advance() {
     let token = this.tokens.shift();
     return token as Token;
   }
 
-  produceAST() {
+  private expect(tokenType: TokenType) {
+    const token = this.tokens.shift();
+    if (!token || token.type !== tokenType) {
+      throw new Error(
+        `Parser Error: \n Expected token type ${tokenType}, got ${token?.type ?? undefined}`,
+      );
+    }
+    return token;
+  }
+
+  produceAST(): Node {
     const ast = this.parseExpression();
     if (!ast) {
       throw new Error("JSON file is empty");
@@ -24,27 +35,50 @@ export default class Parser {
     return ast;
   }
 
-  parseExpression() {
+  parseExpression(): Node {
     switch (this.peek().type) {
       case TokenType.OpenBrace: {
         return this.parseObjectExpression();
       }
+      default:
+        throw new Error("expression is empty");
     }
   }
 
   parseObjectExpression() {
-    if (this.peek().type !== TokenType.OpenBrace) {
-      throw new Error("error while parsing, object should start with {");
-    }
-    this.advance();
+    this.expect(TokenType.OpenBrace);
+    const properties: Property[] = [];
+
     while (!this.isEndOfFile() && this.peek().type != TokenType.CloseBrace) {
-      this.advance();
+      const key = this.expect(TokenType.String);
+      this.expect(TokenType.Colon);
+      const value = this.parseValue();
+      properties.push({
+        kind: NodeType.Property,
+        key: {
+          kind: NodeType.Identifier,
+          value: key.value.slice(1, -1),
+        },
+        value,
+      });
+
+      if (this.peek().type != TokenType.CloseBrace) {
+        this.expect(TokenType.Comma);
+        if (this.peek().type != TokenType.String) {
+          throw new Error(`Parser error: expecting ${TokenType.String} after ${TokenType.Comma}`);
+        }
+      }
     }
 
     const endToken = this.advance();
     if (endToken?.type != TokenType.CloseBrace) {
       throw new Error(`Parser error: expecting ${TokenType.CloseBrace}`);
     }
-    return { kind: "Object" };
+    return { kind: NodeType.Object, properties };
+  }
+
+  parseValue(): Value {
+    const token = this.expect(TokenType.String);
+    return { kind: NodeType.Literal, value: token.value.slice(1, -1) };
   }
 }
