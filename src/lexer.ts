@@ -3,8 +3,10 @@ export enum TokenType {
   CloseBrace = "CloseBrace",
   String = "String",
   Number = "Number",
+  Boolean = "Boolean",
   Colon = "Colon",
   Comma = "Comma",
+  Null = "Null",
   EOF = "EOF",
 }
 export type Token = {
@@ -40,6 +42,19 @@ export function tokenize(sourceCode: string): Token[] {
       val += source.shift();
 
       tokens.push({ type: TokenType.String, value: val });
+    } else if (/[a-z]/.test(source[0])) {
+      let val = "";
+      while (/[a-z]/.test(source[0])) {
+        val += source.shift();
+      }
+
+      if (val == "true" || val == "false") {
+        tokens.push({ type: TokenType.Boolean, value: val });
+      } else if (val == "null") {
+        tokens.push({ type: TokenType.Null, value: val });
+      } else {
+        throw new Error(`unrecognized token: "${val}`);
+      }
     } else if (/\s/.test(source[0])) {
       while (/\s/.test(source[0])) {
         source.shift();

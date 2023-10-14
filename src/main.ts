@@ -7,7 +7,7 @@ import util from "util";
 util.inspect.defaultOptions.depth = null;
 
 async function main() {
-  const res = await parseFile("tests/step1/invalid.json");
+  const res = await parseFile("tests/step3/valid.json");
   console.log(res);
 }
 

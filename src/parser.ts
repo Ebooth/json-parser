@@ -78,7 +78,23 @@ export default class Parser {
   }
 
   parseValue(): Value {
-    const token = this.expect(TokenType.String);
-    return { kind: NodeType.Literal, value: token.value.slice(1, -1) };
+    const token = this.advance();
+
+    switch (token.type) {
+      case TokenType.String: {
+        return { kind: NodeType.Literal, value: token.value.slice(1, -1) };
+      }
+      case TokenType.Number: {
+        return { kind: NodeType.Literal, value: parseFloat(token.value) };
+      }
+      case TokenType.Boolean: {
+        return { kind: NodeType.Literal, value: token.value == "true" };
+      }
+      case TokenType.Null: {
+        return { kind: NodeType.Literal, value: null };
+      }
+      default:
+        throw new Error(`Parser Error: \n Unexpected token type ${token?.type ?? undefined}`);
+    }
   }
 }

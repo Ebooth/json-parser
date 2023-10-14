@@ -21,6 +21,7 @@ export interface Identifier extends Node {
 
 export interface Literal extends Node {
   kind: NodeType.Literal;
+  value: string | number | boolean | null;
 }
 
 export interface Property extends Node {
@@ -29,7 +30,4 @@ export interface Property extends Node {
   value: Value;
 }
 
-export interface Value extends Node {
-  kind: NodeType.Literal;
-  value: string;
-}
+export type Value = Literal;
