@@ -7,7 +7,7 @@ import util from "util";
 util.inspect.defaultOptions.depth = null;
 
 async function main() {
-  const res = await parseFile("tests/step3/valid.json");
+  const res = await parseFile("tests/step4/invalid.json");
   console.log(res);
 }
 
@@ -18,6 +18,7 @@ async function parseFile(filePath: string) {
 
 export function parseText(text: string) {
   const tokens = tokenize(text);
+  console.log(tokens);
   const parser = new Parser(tokens);
   const ast = parser.produceAST();
   const res = evaluate(ast);

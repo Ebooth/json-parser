@@ -1,6 +1,8 @@
 export enum TokenType {
   OpenBrace = "OpenBrace",
   CloseBrace = "CloseBrace",
+  OpenBracket = "OpenBracket",
+  CloseBracket = "CloseBracket",
   String = "String",
   Number = "Number",
   Boolean = "Boolean",
@@ -24,6 +26,10 @@ export function tokenize(sourceCode: string): Token[] {
       tokens.push({ type: TokenType.OpenBrace, value: source.shift() as string });
     } else if (source[0] == "}") {
       tokens.push({ type: TokenType.CloseBrace, value: source.shift() as string });
+    } else if (source[0] == "[") {
+      tokens.push({ type: TokenType.OpenBracket, value: source.shift() as string });
+    } else if (source[0] == "]") {
+      tokens.push({ type: TokenType.CloseBracket, value: source.shift() as string });
     } else if (source[0] == ":") {
       tokens.push({ type: TokenType.Colon, value: source.shift() as string });
     } else if (source[0] == ",") {

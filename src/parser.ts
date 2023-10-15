@@ -40,12 +40,20 @@ export default class Parser {
       case TokenType.OpenBrace: {
         return this.parseObjectExpression();
       }
+      case TokenType.OpenBracket: {
+        return this.parseArrayExpression();
+      }
+      case TokenType.Boolean:
+      case TokenType.Null:
+      case TokenType.Number:
+      case TokenType.String:
+        return this.parseValue();
       default:
         throw new Error("expression is empty");
     }
   }
 
-  parseObjectExpression() {
+  parseObjectExpression(): Value {
     this.expect(TokenType.OpenBrace);
     const properties: Property[] = [];
 
@@ -74,27 +82,80 @@ export default class Parser {
     if (endToken?.type != TokenType.CloseBrace) {
       throw new Error(`Parser error: expecting ${TokenType.CloseBrace}`);
     }
-    return { kind: NodeType.Object, properties };
+    return { kind: NodeType.Object, children: properties };
+  }
+
+  parseArrayExpression(): Value {
+    this.expect(TokenType.OpenBracket);
+    const children: Value[] = [];
+
+    while (!this.isEndOfFile() && this.peek().type != TokenType.CloseBracket) {
+      const value = this.parseValue();
+      children.push(value);
+
+      if (this.peek().type != TokenType.CloseBracket) {
+        this.expect(TokenType.Comma);
+        if (
+          ![TokenType.String, TokenType.Boolean, TokenType.Null, TokenType.Number].includes(
+            this.peek().type,
+          )
+        ) {
+          throw new Error(`Parser error: expecting value after ${TokenType.Comma}`);
+        }
+      }
+    }
+
+    const endToken = this.advance();
+    if (endToken?.type != TokenType.CloseBracket) {
+      throw new Error(`Parser error: expecting ${TokenType.CloseBracket}`);
+    }
+    return { kind: NodeType.Array, children };
   }
 
   parseValue(): Value {
-    const token = this.advance();
+    const token = this.peek();
 
     switch (token.type) {
+      case TokenType.OpenBrace: {
+        return this.parseObjectExpression();
+      }
+      case TokenType.OpenBracket: {
+        return this.parseArrayExpression();
+      }
       case TokenType.String: {
-        return { kind: NodeType.Literal, value: token.value.slice(1, -1) };
+        return this.parseStringValue();
       }
       case TokenType.Number: {
-        return { kind: NodeType.Literal, value: parseFloat(token.value) };
+        return this.parseNumberValue();
       }
       case TokenType.Boolean: {
-        return { kind: NodeType.Literal, value: token.value == "true" };
+        return this.parseBooleanValue();
       }
       case TokenType.Null: {
-        return { kind: NodeType.Literal, value: null };
+        return this.parseNullValue();
       }
       default:
         throw new Error(`Parser Error: \n Unexpected token type ${token?.type ?? undefined}`);
     }
+  }
+
+  parseStringValue(): Value {
+    const token = this.advance();
+    return { kind: NodeType.Literal, value: token.value.slice(1, -1) };
+  }
+
+  parseNumberValue(): Value {
+    const token = this.advance();
+    return { kind: NodeType.Literal, value: parseFloat(token.value) };
+  }
+
+  parseBooleanValue(): Value {
+    const token = this.advance();
+    return { kind: NodeType.Literal, value: token.value == "true" };
+  }
+
+  parseNullValue(): Value {
+    const token = this.advance();
+    return { kind: NodeType.Literal, value: null };
   }
 }

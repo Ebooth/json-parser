@@ -1,5 +1,6 @@
 export enum NodeType {
   Object = "Object",
+  Array = "Array",
   Literal = "Literal",
   Property = "Property",
   Identifier = "Identifier",
@@ -11,7 +12,12 @@ export interface Node {
 
 export interface ObjectLiteral extends Node {
   kind: NodeType.Object;
-  properties: Property[];
+  children: Property[];
+}
+
+export interface ArrayLiteral extends Node {
+  kind: NodeType.Array;
+  children: Value[];
 }
 
 export interface Identifier extends Node {
@@ -30,4 +36,4 @@ export interface Property extends Node {
   value: Value;
 }
 
-export type Value = Literal;
+export type Value = Literal | ObjectLiteral | ArrayLiteral;
